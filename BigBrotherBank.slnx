@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BigBrotherBank.Application/BigBrotherBank.Application.csproj" />
+  <Project Path="BigBrotherBank.Domain/BigBrotherBank.Domain.csproj" />
+  <Project Path="BigBrotherBank.Infrastructure/BigBrotherBank.Infrastructure.csproj" />
+  <Project Path="BigBrotherBank/BigBrotherBank.Api.csproj" />
+</Solution>
