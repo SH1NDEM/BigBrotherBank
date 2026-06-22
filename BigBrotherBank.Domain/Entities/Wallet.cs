@@ -15,13 +15,21 @@ namespace BigBrotherBank.Domain.Entities
         public WalletStatus Status { get; private set; }
         public  DateTime CreatedAtUtc { get; private set; }
 
+        /// <summary>
+        /// Пустой конструктор для EF core
+        /// </summary>
         private Wallet()
         {
             Currency = string.Empty;
         }
 
-        //todo сделать функцианал по закрытию и блокировке счета
-
+        /// <summary>
+        /// Конструктор кошелька
+        /// </summary>
+        /// <param name="_userId">ID пользователя</param>
+        /// <param name="_currency">Валюта</param>
+        /// <exception cref="ArgumentException">ID пользователя не может быть пустым</exception>
+        /// <exception cref="InvalidCurrencyException">Валюта не может быть пустой</exception>
         public Wallet(Guid _userId, string _currency)
         {
             //Проверка id пользователя
@@ -40,6 +48,11 @@ namespace BigBrotherBank.Domain.Entities
             CreatedAtUtc = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Пополнение счета
+        /// </summary>
+        /// <param name="_amount">Сумма</param>
+        /// <exception cref="InvalidAmountException">Сумма должна быть положительной</exception>
         public void Deposit(decimal _amount)
         {
             EnsureWalletIsAcrive();
@@ -50,6 +63,12 @@ namespace BigBrotherBank.Domain.Entities
             Balance += _amount;
         }
 
+        /// <summary>
+        /// Снятие денег со счета
+        /// </summary>
+        /// <param name="_amount">Сумма</param>
+        /// <exception cref="InvalidAmountException">Сумма должна быть положительной</exception>
+        /// <exception cref="InsufficientFundsException">Сумма должна быть больше имеющихся на счете</exception>
         public void Withdraw(decimal _amount)
         {
             EnsureWalletIsAcrive();
@@ -63,10 +82,36 @@ namespace BigBrotherBank.Domain.Entities
             Balance -= _amount;
         }
 
+        /// <summary>
+        /// Проверка активности кошелька
+        /// </summary>
+        /// <exception cref="WalletBlockedException">Кошелек заблокирован</exception>
         public void EnsureWalletIsAcrive()
         {
             if (Status != WalletStatus.Active)
                 throw new WalletBlockedException("Wallet is not active.");
+        }
+
+        /// <summary>
+        /// Блокировка кошелька
+        /// </summary>
+        /// <exception cref="WalletBlockedException">Закрытый кошелек нельзя заблокировать</exception>
+        public void Block()
+        {
+            if (Status == WalletStatus.Closed)
+                throw new WalletBlockedException("Closed wallet cannot be blocked.");
+
+            Status = WalletStatus.Blocked;
+        }
+
+        /// <summary>
+        /// Закрытие кошелька
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Нельзя закрыть кошелек с балансом больше нуля</exception>
+        public void Close()
+        {
+            if (Balance > 0)
+                throw new InvalidOperationException("Cannot close wallet with positive balance.");
         }
     }
 }
