@@ -11,7 +11,7 @@ namespace BigBrotherBank.Domain.Entities
         public Guid Id { get; private set; }
         public Guid UserId { get; private set; }
         public decimal Balance { get; private set; }
-        public string Currency { get; private set; }
+        public Currencies Currency { get; private set; }
         public WalletStatus Status { get; private set; }
         public  DateTime CreatedAtUtc { get; private set; }
 
@@ -20,7 +20,7 @@ namespace BigBrotherBank.Domain.Entities
         /// </summary>
         private Wallet()
         {
-            Currency = string.Empty;
+            Currency = Currencies.NONE;
         }
 
         /// <summary>
@@ -30,20 +30,20 @@ namespace BigBrotherBank.Domain.Entities
         /// <param name="_currency">Валюта</param>
         /// <exception cref="ArgumentException">ID пользователя не может быть пустым</exception>
         /// <exception cref="InvalidCurrencyException">Валюта не может быть пустой</exception>
-        public Wallet(Guid userId, string currency)
+        public Wallet(Guid userId, Currencies currency)
         {
             //Проверка id пользователя
             if (userId == Guid.Empty)
                 throw new ArgumentException("User id cannot be empty", nameof(userId));
             //Проверка входного currency
-            if (string.IsNullOrWhiteSpace(currency))
+            if (currency == Currencies.NONE)
                 throw new InvalidCurrencyException("Currency cannot be empty.");
 
             //Присвоение значений
             Id = Guid.NewGuid();
             UserId = userId;
             Balance = 0;
-            Currency = currency.ToUpper();
+            Currency = currency;
             Status = WalletStatus.Active;
             CreatedAtUtc = DateTime.UtcNow;
         }
@@ -58,7 +58,7 @@ namespace BigBrotherBank.Domain.Entities
             EnsureWalletIsAcrive();
 
             if (amount <= 0)
-                throw new InvalidAmountException("Ammount must be gather than zero.");
+                throw new InvalidAmountException("Amount must be greater than zero.");
 
             Balance += amount;
         }
