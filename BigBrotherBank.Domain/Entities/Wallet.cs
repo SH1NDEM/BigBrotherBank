@@ -30,20 +30,20 @@ namespace BigBrotherBank.Domain.Entities
         /// <param name="_currency">Валюта</param>
         /// <exception cref="ArgumentException">ID пользователя не может быть пустым</exception>
         /// <exception cref="InvalidCurrencyException">Валюта не может быть пустой</exception>
-        public Wallet(Guid _userId, string _currency)
+        public Wallet(Guid userId, string currency)
         {
             //Проверка id пользователя
-            if (_userId == Guid.Empty)
-                throw new ArgumentException("User id cannot be empty", nameof(_userId));
+            if (userId == Guid.Empty)
+                throw new ArgumentException("User id cannot be empty", nameof(userId));
             //Проверка входного currency
-            if (string.IsNullOrWhiteSpace(_currency))
+            if (string.IsNullOrWhiteSpace(currency))
                 throw new InvalidCurrencyException("Currency cannot be empty.");
 
             //Присвоение значений
             Id = Guid.NewGuid();
-            UserId = _userId;
+            UserId = userId;
             Balance = 0;
-            Currency = _currency.ToUpper();
+            Currency = currency.ToUpper();
             Status = WalletStatus.Active;
             CreatedAtUtc = DateTime.UtcNow;
         }
@@ -53,14 +53,14 @@ namespace BigBrotherBank.Domain.Entities
         /// </summary>
         /// <param name="_amount">Сумма</param>
         /// <exception cref="InvalidAmountException">Сумма должна быть положительной</exception>
-        public void Deposit(decimal _amount)
+        public void Deposit(decimal amount)
         {
             EnsureWalletIsAcrive();
 
-            if (_amount <= 0)
+            if (amount <= 0)
                 throw new InvalidAmountException("Ammount must be gather than zero.");
 
-            Balance += _amount;
+            Balance += amount;
         }
 
         /// <summary>
@@ -69,17 +69,17 @@ namespace BigBrotherBank.Domain.Entities
         /// <param name="_amount">Сумма</param>
         /// <exception cref="InvalidAmountException">Сумма должна быть положительной</exception>
         /// <exception cref="InsufficientFundsException">Сумма должна быть больше имеющихся на счете</exception>
-        public void Withdraw(decimal _amount)
+        public void Withdraw(decimal amount)
         {
             EnsureWalletIsAcrive();
 
-            if (_amount <= 0)
+            if (amount <= 0)
                 throw new InvalidAmountException("Ammount must be gather than zero.");
 
-            if (Balance < _amount)
+            if (Balance < amount)
                 throw new InsufficientFundsException("Insufficient funds.");
 
-            Balance -= _amount;
+            Balance -= amount;
         }
 
         /// <summary>
