@@ -7,7 +7,7 @@ using System.Transactions;
 
 namespace BigBrotherBank.Domain.Entities
 {
-    internal class Transaction
+    public class Transaction
     {
         public Guid Id { get; private set; }
         public Guid? FromWalletId { get; private set; }
